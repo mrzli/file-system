@@ -4,6 +4,10 @@ All notable changes to the "file-system" will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.1] - 2024-05-29
+
+### Added
+
 - Initial release.
 
 <!--
