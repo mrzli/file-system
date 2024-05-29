@@ -1,2 +1,2 @@
 export * from './constants';
-export * from './util';
+export * from './klaw-async';

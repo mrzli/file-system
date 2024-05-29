@@ -1,3 +1,9 @@
-# file-system
+# File System
 
-Project readme goes here.
+This project contains some helper functions and types for working with the file system.
+
+## Installation
+
+```bash
+npm install --save @gmjs/file-system
+```

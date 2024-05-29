@@ -1,7 +1,9 @@
 import { Options } from 'klaw';
 import { FindOptions } from '../types';
 
-export function toKlawFindOptions(options: FindOptions | undefined): Options {
+export function toKlawAsyncFindOptions(
+  options: FindOptions | undefined,
+): Options {
   if (!options) {
     return {};
   }
