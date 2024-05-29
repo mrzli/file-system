@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      klaw:
+        specifier: ^4.1.0
+        version: 4.1.0
       tslib:
         specifier: ^2.6.2
         version: 2.6.2
@@ -21,6 +24,9 @@ importers:
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
+      '@types/klaw':
+        specifier: ^3.0.6
+        version: 3.0.6
       '@types/node':
         specifier: ^20.12.12
         version: 20.12.12
@@ -468,6 +474,9 @@ packages:
 
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+
+  '@types/klaw@3.0.6':
+    resolution: {integrity: sha512-BErW5TrTz4nzt/c3VRGf0Bug4JyQJ1o807F4mAfXfvOzFZ8SKgFeHJ0T28Y1KtqlMEB+cUgN7S7CsyQDQ/qxqg==}
 
   '@types/node@20.12.12':
     resolution: {integrity: sha512-eWLDGF/FOSPtAvEqeRAQ4C8LSA7M1I7i0ky1I8U7kD1J5ITyW3AsRhQrKVoWf5pFKZ2kILsEGJhsI9r93PYnOw==}
@@ -3124,6 +3133,10 @@ snapshots:
   '@types/json-schema@7.0.15': {}
 
   '@types/json5@0.0.29': {}
+
+  '@types/klaw@3.0.6':
+    dependencies:
+      '@types/node': 20.12.12
 
   '@types/node@20.12.12':
     dependencies:

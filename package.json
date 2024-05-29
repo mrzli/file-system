@@ -30,12 +30,14 @@
     "pub": "pnpm run pac && pnpm run pub-only"
   },
   "dependencies": {
+    "klaw": "^4.1.0",
     "tslib": "^2.6.2"
   },
   "devDependencies": {
     "@gmjs/eslint-config": "^0.0.36",
     "@gmjs/npm-publish-cli": "^0.0.9",
     "@jest/globals": "^29.7.0",
+    "@types/klaw": "^3.0.6",
     "@types/node": "^20.12.12",
     "eslint": "^9.3.0",
     "jest": "^29.7.0",
