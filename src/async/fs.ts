@@ -30,3 +30,7 @@ export async function createFileAsync(path: string): Promise<void> {
 export async function existsAsync(path: string): Promise<boolean> {
   return await fs.pathExists(path);
 }
+
+export function ensureDirAsync(path: string): Promise<void> {
+  return fs.ensureDir(path);
+}

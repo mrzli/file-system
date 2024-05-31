@@ -22,6 +22,7 @@ npm install --save @gmjs/file-system
 - [`writeBinaryAsync`](#writebinaryasync) - Writes binary data to a file.
 - [`createFileAsync`](#createfileasync) - Creates a file.
 - [`existsAsync`](#existsasync) - Checks if a file exists.
+- [`ensureDirAsync`](#ensuredirasync) - Creates a directory and any necessary parent directories if they do not exist.
 
 #### Find
 
@@ -37,6 +38,7 @@ npm install --save @gmjs/file-system
 - [`writeBinarySync`](#writebinarysync) - Synchronously writes binary data to a file.
 - [`createFileSync`](#createfilesync) - Synchronously creates a file.
 - [`existsSync`](#existssync) - Synchronously checks if a file exists.
+- [`ensureDirSync`](#ensuredirsync) - Synchronously creates a directory and any necessary parent directories if they do not exist.
 
 #### Find
 
@@ -135,6 +137,18 @@ async function checkFileExists(): Promise<void> {
   } else {
     console.log('File does not exist.');
   }
+}
+```
+
+#### `ensureDirAsync`
+
+Creates a directory and any necessary parent directories if they do not exist.
+
+Accepts a `path` parameter, returns a `Promise<void>`.
+
+```ts
+async function createPathIfNotExists(): Promise<void> {
+  await ensureDirAsync('path/to/directory');
 }
 ```
 
@@ -243,6 +257,18 @@ function checkFileExists(): void {
   } else {
     console.log('File does not exist.');
   }
+}
+```
+
+#### `ensureDirSync`
+
+Synchronouly creates a directory and any necessary parent directories if they do not exist.
+
+Accepts a `path` parameter.
+
+```ts
+function createPathIfNotExists(): void {
+  ensureDirSync('path/to/directory');
 }
 ```
 
