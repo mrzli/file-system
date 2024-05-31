@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import { ENCODING_UTF8 } from '../util';
+import { ENCODING_UTF8 } from '../constants';
 
 export async function readTextAsync(path: string): Promise<string> {
   return await fs.readFile(path, ENCODING_UTF8);

@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import { ENCODING_UTF8 } from '../util';
+import { ENCODING_UTF8 } from '../constants';
 
 export function readTextSync(path: string): string {
   return fs.readFileSync(path, ENCODING_UTF8);
