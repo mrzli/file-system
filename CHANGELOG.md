@@ -4,7 +4,13 @@ All notable changes to the "file-system" will be documented in this file.
 
 ## [Unreleased]
 
-## [0.0.4] - 2024-08-03
+## [0.0.5] - 2024-08-04
+
+### Fixed
+
+- Fix an issue with find function on Windows.
+
+## [0.0.4] - 2024-08-04
 
 ### Changed
 
