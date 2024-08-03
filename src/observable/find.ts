@@ -1,10 +1,12 @@
 import { readdir, stat } from 'node:fs/promises';
 import { join, resolve } from 'node:path/posix';
 import { Observable } from 'rxjs';
-import { FindOptions, FilePathStats } from '../../types';
-import { filterEntries } from './filter';
-import { sortEntries } from './sort';
-import { InternalFilePathStatsEntry } from './internal-file-path-stats';
+import { FindOptions, FilePathStats } from '../types';
+import {
+  filterEntries,
+  InternalFilePathStatsEntry,
+  sortEntries,
+} from '../shared';
 
 export function fromFindFsEntries(
   directory: string,
@@ -52,10 +54,7 @@ async function enumerateDirEntriesDeep(
   const filtered = filterEntries(pathStatsEntries, options.filter);
   const sorted = sortEntries(filtered, options.sort);
 
-  const isFinalDepth =
-    depthLimit !== undefined &&
-    depthLimit > 0 &&
-    ancestors.length + 1 >= depthLimit;
+  const isFinalDepth = isAtFinalDepth(depthLimit, ancestors);
 
   for (const entry of sorted) {
     onEnumerateEntry(entry[0]);
@@ -84,4 +83,15 @@ async function toFilePathStats(
   const fpStats: FilePathStats = { path: finalRelativeFsPath, stats };
 
   return [fpStats, fsName];
+}
+
+function isAtFinalDepth(
+  depthLimit: number | undefined,
+  ancestors: readonly string[],
+): boolean {
+  return (
+    depthLimit !== undefined &&
+    depthLimit > 0 &&
+    ancestors.length + 1 >= depthLimit
+  );
 }

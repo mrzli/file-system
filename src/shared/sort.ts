@@ -4,9 +4,9 @@ import {
   FileSortTypeOrder,
   FindSortComparer,
   FindSortOptions,
-} from '../../types';
-import { FindSortPredefinedParameters } from '../../types/find-options/sort/find-sort-predefined-parameters';
-import { ensureNever } from '../../util';
+  FindSortPredefinedParameters,
+} from '../types';
+import { ensureNever } from '../util';
 import { InternalFilePathStatsEntry } from './internal-file-path-stats';
 
 export function sortEntries(
