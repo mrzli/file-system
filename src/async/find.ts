@@ -1,9 +1,10 @@
-import { readdir, stat } from 'node:fs/promises';
-import { join, resolve } from 'node:path/posix';
+import { readdir } from 'node:fs/promises';
+import { resolve } from 'node:path/posix';
 import {
   filterEntries,
   sortEntries,
-  InternalFilePathStatsEntry,
+  toFilePathStats,
+  isAtFinalDepth,
 } from '../shared';
 import { FindOptions, FilePathStats } from '../types';
 
@@ -53,30 +54,4 @@ async function findDirEntriesDeep(
   }
 
   return entries;
-}
-
-async function toFilePathStats(
-  fullDirPath: string,
-  relativeDirPath: string,
-  fsName: string,
-): Promise<InternalFilePathStatsEntry> {
-  const fullFsPath = resolve(fullDirPath, fsName);
-  const relativeFsPath = join(relativeDirPath, fsName);
-  const stats = await stat(fullFsPath);
-
-  const finalRelativeFsPath = relativeFsPath + (stats.isDirectory() ? '/' : '');
-  const fpStats: FilePathStats = { path: finalRelativeFsPath, stats };
-
-  return [fpStats, fsName];
-}
-
-function isAtFinalDepth(
-  depthLimit: number | undefined,
-  ancestors: readonly string[],
-): boolean {
-  return (
-    depthLimit !== undefined &&
-    depthLimit > 0 &&
-    ancestors.length + 1 >= depthLimit
-  );
 }

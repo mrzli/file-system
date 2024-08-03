@@ -5,8 +5,8 @@ import {
   FindFilterStringParameters,
   FindFilterStringParametersByType,
   FindFilterRegexParameters,
-} from '../types';
-import { ensureNever } from '../util';
+} from '../../types';
+import { ensureNever } from '../../util';
 import { InternalFilePathStatsEntry } from './internal-file-path-stats';
 
 export function filterEntries(
