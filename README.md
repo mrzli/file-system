@@ -26,7 +26,7 @@ npm install --save @gmjs/file-system
 
 #### Find
 
-- [`findFileSystemEntriesAsync`](#findfilesystementriesasync) - Searches a directory for files.
+- [`findFsEntriesAsync`](#findfsentriesasync) - Searches a directory for file system entries, recursively.
 
 ### Sync
 
@@ -42,13 +42,13 @@ npm install --save @gmjs/file-system
 
 #### Find
 
-- [`findFileSystemEntriesSync`](#findfilesystementriessync) - Synchronously searches a directory for files.
+- [`findFsEntriesSync`](#findfsentriessync) - Synchronously searches a directory for file system entries, recursively.
 
 ### Observable
 
 #### Find
 
-- [`fromFindFsEntries`](#fromfindfsentries) - Creates an observable of results of file search for a given directory.
+- [`fromFindFsEntries`](#fromfindfsentries) - Creates an observable of results of file search for a given directory, recursively.
 
 ## API
 
@@ -154,15 +154,17 @@ async function createPathIfNotExists(): Promise<void> {
 
 #### Find
 
-#### `findFileSystemEntriesAsync`
+#### `findFsEntriesAsync`
 
-Searches a directory for files. Search can be limited by depth.
+Searches a directory for file system entries, recursively. Search can be limited by depth.
 
 Accepts a `directory` parameter and an optional `options` parameter of type [`FindOptions`](#findoptions), returns a `Promise<readonly FilePathStats[]>`.
 
+For more details on how the search works, see the [`FindOptions`](#findoptions) section.
+
 ```ts
 async function printFilePaths(): Promise<void> {
-  const files = await findFileSystemEntriesAsync(
+  const files = await findFsEntriesAsync(
     'path/to/directory',
     { depthLimit: 2 },
   );
@@ -274,15 +276,17 @@ function createPathIfNotExists(): void {
 
 #### Find
 
-#### `findFileSystemEntriesSync`
+#### `findFsEntriesSync`
 
-Synchronously searches a directory for files. Search can be limited by depth.
+Synchronously searches a directory for file system entries, recursivelys. Search can be limited by depth.
 
 Accepts a `directory` parameter and an optional `options` parameter of type [`FindOptions`](#findoptions), returns a `readonly FilePathStats[]`.
 
+For more details on how the search works, see the [`FindOptions`](#findoptions) section.
+
 ```ts
 function printFilePaths(): void {
-  const files = findFileSystemEntriesSync(
+  const files = findFsEntriesSync(
     'path/to/directory',
     { depthLimit: 2 },
   );
@@ -298,9 +302,11 @@ function printFilePaths(): void {
 
 #### `fromFindFsEntries`
 
-Creates an observable of results of file search for a given directory.
+Creates an observable of results of file search for a given directory. Search is recursive.
 
 Accepts a `directory` parameter and an optional `options` parameter of type [`FindOptions`](#findoptions), returns an `Observable<FilePathStats>`.
+
+For more details on how the search works, see the [`FindOptions`](#findoptions) section.
 
 ```ts
 fromFindFsEntries(
@@ -316,7 +322,7 @@ fromFindFsEntries(
 
 ### `FilePathStats`
 
-Information about a file.
+Information about a file. This is the return value of the find functions.
 
 ```ts
 interface FilePathStats {
@@ -325,6 +331,39 @@ interface FilePathStats {
 }
 ```
 
+`path` contains the file system entry path relative to the root search directory.
+
+`stats` contains the file system stats of the file system entry. This is a Node.js `fs.Stats` object, and will contain information about whether the entry is a file or directory, etc.
+
+If we have the following file structure:
+
+```
+- root/
+  - file1.txt
+  - file2.txt
+  - directory1/
+    - file3.txt
+    - file4.txt
+  - directory2/
+    - file5.txt
+```
+
+And the search root is `root/`, the `FilePathStats` objects for the files will have the following `path` values:
+
+```
+file1.txt
+file2.txt
+directory1/
+directory1/file3.txt
+directory1/file4.txt
+directory2/
+directory2/file5.txt
+```
+
+Any directory path will be suffixed with a `/` - this can be used to differentiate between files and directories without having to check the `stats` object, and it can be used when speciying sort and filter options.
+
+The search will be done in a **depth-first** manner.
+
 #### `FindOptions`
 
 Input options when searching for files:
@@ -332,10 +371,325 @@ Input options when searching for files:
 - `depthLimit: number | undefined`
   - The maximum depth to search.
   - Default is `undefined`.
-  - If value is `-1` or `undefined`, there is no depth limit (limit is inifnite).
+  - If value is `0` or `undefined`, there is no depth limit (limit is inifnite).
+- `sort: FindSortOptions | undefined` - See [`FindSortOptions`](#findsortoptions).
+- `filter: FindFilterOptions | undefined` - See [`FindFilterOptions`](#findfilteroptions).
 
 ```ts
-interface FindOptions {
-  readonly depthLimit?: number | undefined;
+export interface FindOptions {
+  readonly depthLimit?: number;
+  readonly sort?: FindSortOptions;
+  readonly filter?: FindFilterOptions;
+}
+```
+
+#### `FindSortOptions`
+
+**NOTE:** Sorting is done on a per-directory basis, not globally across all files returned by the find function. To sort globally, you can simply implement sorting at the call site, outside of the find function.
+
+Sorting options are a discriminated union of two sorting systems:
+
+- `comparer` - Accepts a custom comparer function.
+- `predefined` - Accepts predefined sorting strategies.
+
+##### `comparer`
+
+Completely flexible, allows you to specify any logic in a custom comparer function.
+
+For example, to sort first files, then directories, and each of those by name ascending, you can use the following comparer:
+
+```ts
+const comparer: FindSortComparer = (a, b) => {
+  if (a.stats.isFile() && b.stats.isDirectory()) {
+    return 1;
+  }
+  if (a.stats.isDirectory() && b.stats.isDirectory()) {
+    return -1;
+  }
+  return a.path.localeCompare(b.path);
+};
+```
+
+##### `predefined`
+
+Allows the use of predefined sorting strategies.
+
+Two parameters need to be specified:
+
+- `typeOrder: FileSortTypeOrder` - The sort order by file system type (files and directories):
+  - `file-first` - Files first, then directories.
+  - `directory-first` - Directories first, then files.
+  - `none` - No sorting by type, files and directories are mixed.
+- `direction: FileSortDirection` - The sort direction of file path:
+  - `asc` - Ascending (by file path).
+  - `desc` - Descending (by file path).
+
+To achieve the similar sorting as in the `comparer` example above (there are some small differences in how locale compare is done), you can use the following predefined parameters:
+
+```ts
+const params: FindSortPredefinedParameters = {
+  typeOrder: 'file-first',
+  direction: 'asc',
+};
+```
+
+##### `FindSortOptions` Implemetation
+
+```ts
+export const LIST_OF_FIND_SORT_OPTIONS_KINDS = [
+  'comparer',
+  'predefined',
+] as const;
+
+export type FindSortOptionsKind =
+  (typeof LIST_OF_FIND_SORT_OPTIONS_KINDS)[number];
+
+export interface FindSortOptionsBase {
+  readonly kind: FindSortOptionsKind;
+}
+
+export interface FindSortOptionsComparer extends FindSortOptionsBase {
+  readonly kind: 'comparer';
+  readonly comparer: FindSortComparer;
+}
+
+export interface FindSortOptionsPredefined extends FindSortOptionsBase {
+  readonly kind: 'predefined';
+  readonly params: FindSortPredefinedParameters;
+}
+
+export type FindSortOptions =
+  | FindSortOptionsComparer
+  | FindSortOptionsPredefined;
+
+// comparer
+export type FindSortComparer = (a: FilePathStats, b: FilePathStats) => number;
+
+// predefined
+export interface FindSortPredefinedParameters {
+  readonly typeOrder: FileSortTypeOrder;
+  readonly direction: FileSortDirection;
+}
+
+export type FileSortTypeOrder = 'file-first' | 'directory-first' | 'none';
+export type FileSortDirection = 'asc' | 'desc';
+```
+
+#### `FindFilterOptions`
+
+**NOTE:** Filtering is done on a per-directory basis, not globally across all files returned by the find function. To filter globally, you can simply implement filtering at the call site, outside of the find function.
+
+##### Caveats
+
+Related to the above - if a directory is filtered out, it will prevent the search from entering that directory. This can be useful for performance reasons, as it can prevent the search from entering large directories that we may want to eventually filter out entirely. Example is a `node_modules` directory in JavaScript or TypeScript projects.
+
+This can cause some unexpected behavior if you are not aware of it.
+
+Lets say we have the following monorepo file structure:
+
+```
+- root/
+  - package.json
+  - libs/
+    - lib1/
+      // ...
+      package.json
+    - lib2/
+      // ...
+      package.json
+```
+
+If we want to search for all `package.json` files in the monorepo, we can use the following filter:
+
+```ts
+const filter: FindFilterOptions = {
+  kind: 'string',
+  params: {
+    include: [
+      { endsWith: '/' }, // make sure that directories are not filtered out
+      { endsWith: 'package.json' },
+    ],
+  },
+};
+```
+
+It would return the following paths:
+
+```
+package.json
+libs/
+libs/lib1/
+libs/lib1/package.json
+libs/lib2/
+libs/lib2/package.json
+```
+
+You could then further filter out the directories at the call site if that is what you wanted.
+
+If you just specified this filter:
+
+```ts
+const filter: FindFilterOptions = {
+  kind: 'string',
+  params: {
+    include: [
+      { endsWith: 'package.json' },
+    ],
+  },
+};
+```
+
+It would just return the root `package.json` file:
+
+```
+package.json
+```
+
+The reason is that no directory would match `endsWith: 'package.json'`, would be filtered out, and the search would not enter them to find the `package.json` files inside.
+
+##### Description
+
+Filtering options are a discriminated union of three filtering systems:
+
+- `predicate` - Accepts a custom predicate function.
+- `string` - Accepts string filtering parameters.
+- `regex` - Accepts regex filtering parameters.
+
+##### `predicate`
+
+Completely flexible, allows you to specify any logic in a custom predicate function.
+
+For example, to filter out all files that don't end with `.txt`, you can use the following predicate:
+
+```ts
+const predicate: FindFilterPredicate = (entry) => {
+  return entry.path.endsWith('.txt');
+};
+```
+
+##### `string`
+
+**NOTE:** Path used for comparison is the [FilePathStats](#filepathstats) `path` property. This is the path relative from the search root directory. If a file system entry is a directory, the path will end with a `/`.
+
+See `FindFilterStringParameters` below for the structure of the options.
+
+It allows specification of `include` and `exclude` arrays.
+
+Each array can contain multiple `FindFilterStringParametersByType` objects, each of which can contain the following properties:
+
+- `startsWith: string | undefined` - The file path must start with this string.
+- `endsWith: string | undefined` - The file path must end with this string.
+- `contains: string | undefined` - The file path must contain this string.
+- `equals: string | undefined` - The file path must be equal to this string.
+
+If no properties are specified (you pass in an empty array), all files will be included.
+
+If you specify more than one property, all properties must match for the file to be included (`AND` logic is used).
+
+If more than one of the above objects are specified (in the array of `include` or `exclude`), `OR` logic is used between the items (meaning file system entries are included or excluded if they are matched by any filter element in the array).
+
+`include` and `exclude` arrays function the same way except that:
+
+- `include` is used to include files that match the criteria, and `exclude` is used to exclude files that match the criteria (obviously).
+- If `include` is not specified, all files are included by default, whereas if `exclude` is not specified, no files are excluded by default.
+
+First any files that match the `include` criteria are included, then any files that match the `exclude` criteria are removed from those included files.
+
+Example:
+
+```
+a.txt
+a.bin
+b.txt
+b.bin
+c.txt
+c.bin
+```
+
+```ts
+const params: FindFilterStringParameters = {
+  include: [
+    { startsWith: 'a', endsWith: '.txt' },
+    { endsWith: '.bin' },
+  ],
+  exclude: [
+    { startsWith: 'c' },
+  ],
+};
+```
+
+Would return:
+
+```
+a.txt
+a.bin
+b.bin
+```
+
+1. First `include` entry would include `a.txt`.
+2. Second `include` entry would include `a.bin`, `b.bin`, and `c.bin`.
+3. First (and only) `exclude` entry would exclude `c.bin`, and would have excluded `c.txt` if it had previously been included.
+4. That leaves `a.txt`, `a.bin`, and `b.bin`.
+
+##### `regex`
+
+Works exactly the same as `string`, but each item in the `include` and `exclude` arrays is a `RegExp` object instead of a `FindFilterStringParametersByType` object.
+
+##### `FindFilterOptions` Implemetation
+
+```ts
+export const LIST_OF_FIND_FILTER_OPTIONS_KINDS = [
+  'predicate',
+  'string',
+  'regex',
+] as const;
+
+export type FindFilterOptionsKind =
+  (typeof LIST_OF_FIND_FILTER_OPTIONS_KINDS)[number];
+
+export interface FindFilterOptionsBase {
+  readonly kind: FindFilterOptionsKind;
+}
+
+export interface FindFilterOptionsPredicate extends FindFilterOptionsBase {
+  readonly kind: 'predicate';
+  readonly predicate: FindFilterPredicate;
+}
+
+export interface FindFilterOptionsString extends FindFilterOptionsBase {
+  readonly kind: 'string';
+  readonly params: FindFilterStringParameters;
+}
+
+export interface FindFilterOptionsRegex extends FindFilterOptionsBase {
+  readonly kind: 'regex';
+  readonly params: FindFilterRegexParameters;
+}
+
+export type FindFilterOptions =
+  | FindFilterOptionsPredicate
+  | FindFilterOptionsString
+  | FindFilterOptionsRegex;
+
+// predicate
+export type FindFilterPredicate = (entry: FilePathStats) => boolean;
+
+// string
+export interface FindFilterStringParameters {
+  readonly include?: readonly FindFilterStringParametersByType[];
+  readonly exclude?: readonly FindFilterStringParametersByType[];
+}
+
+export interface FindFilterStringParametersByType {
+  readonly startsWith?: string;
+  readonly endsWith?: string;
+  readonly contains?: string;
+  readonly equals?: string;
+}
+
+// regex
+export interface FindFilterRegexParameters {
+  readonly include?: readonly RegExp[];
+  readonly exclude?: readonly RegExp[];
 }
 ```
