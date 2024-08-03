@@ -6,21 +6,38 @@ import { findFsEntriesAsync } from '../async';
 import { findFsEntriesSync } from '../sync';
 
 async function run(): Promise<void> {
-  const dir = '.';
+  const dir =
+    'C:\\Users\\Mrzli\\Development\\Projects\\private\\projects\\js\\trading\\gm-trading\\';
   const options: FindOptions = {
     depthLimit: undefined,
     filter: {
       kind: 'string',
       params: {
-        exclude: [
+        include: [
           {
-            endsWith: 'node_modules/',
+            startsWith: 'apps/',
+            endsWith: '/',
           },
+          {
+            startsWith: 'libs/',
+            endsWith: '/',
+          },
+          {
+            endsWith: 'package.json',
+          },
+        ],
+        exclude: [
           {
             endsWith: '.git/',
           },
           {
+            endsWith: 'node_modules/',
+          },
+          {
             endsWith: 'dist/',
+          },
+          {
+            equals: 'package.json',
           },
         ],
       },
@@ -34,7 +51,7 @@ async function run(): Promise<void> {
     },
   };
 
-  syncExample(dir, options);
+  await asyncExample(dir, options);
 }
 
 async function observableExample(
@@ -52,7 +69,9 @@ async function observableExample(
 
 async function asyncExample(dir: string, options: FindOptions): Promise<void> {
   const entries = await findFsEntriesAsync(dir, options);
-  const files = entries.map((entry) => entry.path);
+  const files = entries
+    .map((entry) => entry.path)
+    .filter((path) => path.endsWith('package.json'));
   console.log(files);
 }
 
