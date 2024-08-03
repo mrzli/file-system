@@ -11,12 +11,6 @@ importers:
       fs-extra:
         specifier: ^11.2.0
         version: 11.2.0
-      klaw:
-        specifier: ^4.1.0
-        version: 4.1.0
-      klaw-sync:
-        specifier: ^6.0.0
-        version: 6.0.0
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -36,12 +30,6 @@ importers:
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
-      '@types/klaw':
-        specifier: ^3.0.6
-        version: 3.0.6
-      '@types/klaw-sync':
-        specifier: ^6.0.5
-        version: 6.0.5
       '@types/node':
         specifier: ^20.12.12
         version: 20.12.12
@@ -499,12 +487,6 @@ packages:
 
   '@types/jsonfile@6.1.4':
     resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
-
-  '@types/klaw-sync@6.0.5':
-    resolution: {integrity: sha512-xlavCRyu5ibDjsOc7PSgeUbwOBZdnJsND8gFUVfBilplbBIWhLZVjwtqbZq0327ny3jNt7oviEh5NS9a4LudeQ==}
-
-  '@types/klaw@3.0.6':
-    resolution: {integrity: sha512-BErW5TrTz4nzt/c3VRGf0Bug4JyQJ1o807F4mAfXfvOzFZ8SKgFeHJ0T28Y1KtqlMEB+cUgN7S7CsyQDQ/qxqg==}
 
   '@types/node@20.12.12':
     resolution: {integrity: sha512-eWLDGF/FOSPtAvEqeRAQ4C8LSA7M1I7i0ky1I8U7kD1J5ITyW3AsRhQrKVoWf5pFKZ2kILsEGJhsI9r93PYnOw==}
@@ -3188,14 +3170,6 @@ snapshots:
   '@types/json5@0.0.29': {}
 
   '@types/jsonfile@6.1.4':
-    dependencies:
-      '@types/node': 20.12.12
-
-  '@types/klaw-sync@6.0.5':
-    dependencies:
-      '@types/node': 20.12.12
-
-  '@types/klaw@3.0.6':
     dependencies:
       '@types/node': 20.12.12
 
