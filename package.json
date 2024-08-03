@@ -16,7 +16,7 @@
   "type": "commonjs",
   "main": "./src/index.js",
   "scripts": {
-    "dev": "ts-node src/index.ts",
+    "dev": "ts-node src/_local/run.ts",
     "lint": "eslint --fix . && prettier --write .",
     "lint:nofix": "eslint . && prettier --check .",
     "test-only": "jest --passWithNoTests",
@@ -37,7 +37,7 @@
     "tslib": "^2.6.2"
   },
   "devDependencies": {
-    "@gmjs/eslint-config": "^0.0.36",
+    "@gmjs/eslint-config": "^0.0.40",
     "@gmjs/npm-publish-cli": "^0.0.9",
     "@jest/globals": "^29.7.0",
     "@types/fs-extra": "^11.0.4",
