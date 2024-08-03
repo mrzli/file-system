@@ -2,6 +2,7 @@ import { lastValueFrom, map, toArray } from 'rxjs';
 import { fromFindFsEntries } from '../observable';
 import { FindOptions } from '../types';
 import { findFsEntriesAsync } from '../async';
+import { findFsEntriesSync } from '../sync';
 
 async function run(): Promise<void> {
   const dir = '.';
@@ -32,7 +33,7 @@ async function run(): Promise<void> {
     },
   };
 
-  await promiseExample(dir, options);
+  syncExample(dir, options);
 }
 
 async function observableExample(
@@ -48,11 +49,14 @@ async function observableExample(
   console.log(files);
 }
 
-async function promiseExample(
-  dir: string,
-  options: FindOptions,
-): Promise<void> {
+async function asyncExample(dir: string, options: FindOptions): Promise<void> {
   const entries = await findFsEntriesAsync(dir, options);
+  const files = entries.map((entry) => entry.path);
+  console.log(files);
+}
+
+function syncExample(dir: string, options: FindOptions): void {
+  const entries = findFsEntriesSync(dir, options);
   const files = entries.map((entry) => entry.path);
   console.log(files);
 }
