@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { lastValueFrom, map, toArray } from 'rxjs';
 import { fromFindFsEntries } from '../observable';
 import { FindOptions } from '../types';
