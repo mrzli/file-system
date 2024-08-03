@@ -16,7 +16,7 @@
   "type": "commonjs",
   "main": "./src/index.js",
   "scripts": {
-    "dev": "ts-node src/index.ts",
+    "dev": "ts-node src/_local/run.ts",
     "lint": "eslint --fix . && prettier --write .",
     "lint:nofix": "eslint . && prettier --check .",
     "test": "jest --passWithNoTests",

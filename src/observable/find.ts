@@ -1,5 +1,5 @@
 import { readdir } from 'node:fs/promises';
-import { resolve } from 'node:path/posix';
+import { resolve } from 'node:path';
 import { Observable } from 'rxjs';
 import { FindOptions, FilePathStats } from '../types';
 import {

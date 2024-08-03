@@ -1,5 +1,5 @@
 import { readdirSync } from 'node:fs';
-import { resolve } from 'node:path/posix';
+import { resolve } from 'node:path';
 import {
   filterEntries,
   sortEntries,

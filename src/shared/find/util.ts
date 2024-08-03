@@ -1,6 +1,7 @@
 import { stat } from 'node:fs/promises';
 import { statSync } from 'node:fs';
-import { join, resolve } from 'node:path/posix';
+import { resolve } from 'node:path';
+import { join } from 'node:path/posix';
 import { FilePathStats } from '../../types';
 import { InternalFilePathStatsEntry } from './internal-file-path-stats';
 
