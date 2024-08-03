@@ -3,7 +3,7 @@ import { resolve } from 'node:path/posix';
 import {
   filterEntries,
   sortEntries,
-  toFilePathStats,
+  toFilePathStatsAsync,
   isAtFinalDepth,
 } from '../shared';
 import { FindOptions, FilePathStats } from '../types';
@@ -28,7 +28,7 @@ async function findDirEntriesDeep(
   const dirEntries = await readdir(fullDirPath);
   const pathStatsEntries = await Promise.all(
     dirEntries.map((fsName) =>
-      toFilePathStats(fullDirPath, relativeDirPath, fsName),
+      toFilePathStatsAsync(fullDirPath, relativeDirPath, fsName),
     ),
   );
 

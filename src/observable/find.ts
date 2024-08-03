@@ -6,7 +6,7 @@ import {
   filterEntries,
   isAtFinalDepth,
   sortEntries,
-  toFilePathStats,
+  toFilePathStatsAsync,
 } from '../shared';
 
 export function fromFindFsEntries(
@@ -48,7 +48,7 @@ async function enumerateDirEntriesDeep(
   const dirEntries = await readdir(fullDirPath);
   const pathStatsEntries = await Promise.all(
     dirEntries.map((fsName) =>
-      toFilePathStats(fullDirPath, relativeDirPath, fsName),
+      toFilePathStatsAsync(fullDirPath, relativeDirPath, fsName),
     ),
   );
 

@@ -3,7 +3,7 @@ import { join, resolve } from 'node:path';
 import { FilePathStats } from '../../types';
 import { InternalFilePathStatsEntry } from './internal-file-path-stats';
 
-export async function toFilePathStats(
+export async function toFilePathStatsAsync(
   fullDirPath: string,
   relativeDirPath: string,
   fsName: string,
